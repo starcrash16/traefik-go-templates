@@ -71,7 +71,7 @@ Ejecute el script de configuración. Esto generará los certificados SSL y conve
 ```bash
 chmod +x setup.sh
 ./setup.sh
-```
+`
 ### 3. Levantar la infraestructura:
 ```bash
 sudo podman-compose up -d
@@ -144,5 +144,6 @@ Interpretación de Resultados Manuales (curl)
 ### 4. Race Condition en Volúmenes
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
+
 
 
