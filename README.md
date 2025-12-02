@@ -52,8 +52,9 @@ Para entender cómo administrar este proyecto, es crucial distinguir entre **Orq
 ├── certs/                  # (Generado automáticamente) Llaves SSL
 ├── proyecto1/              # Código fuente Proyecto 1
 └── proyecto2/              # Código fuente Proyecto 2
-
+```
 ---
+
 # 🚀 Instalación y Despliegue
 
 ## Requisitos
@@ -71,18 +72,21 @@ Ejecute el script de configuración. Esto generará los certificados SSL y conve
 ```bash
 chmod +x setup.sh
 ./setup.sh
-`
+```
+
 ### 3. Levantar la infraestructura:
 ```bash
 sudo podman-compose up -d
-`
+```
 
 ### 4. Verificar estado:
 ```bash
 sudo podman ps
 # Deben aparecer: traefik-proxy, nginx-p1, nginx-p2 en estado "Up".
-`
+```
+
 ---
+
 # ⚙️ Guía de Configuración
 
 ## Caso A: Agregar un nuevo Proyecto Local
@@ -94,7 +98,7 @@ sudo podman ps
 labels:
   - "traefik.http.routers.mi-app.rule=PathPrefix(`/laboratorio/mi-app`)"
   - "traefik.http.services.mi-app.loadbalancer.server.port=80"
-`
+```
 3. Reinicie: podman-compose up -d.
 
 ## Caso B: Agregar una Ruta a un Servidor Externo (IP)
@@ -146,6 +150,7 @@ Interpretación de Resultados Manuales (curl)
 ### 4. Race Condition en Volúmenes
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
+
 
 
 
