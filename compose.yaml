@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  reverse-proxy:
+    image: docker.io/library/traefik:v3.0
+    container_name: traefik-proxy
+    command: --configFile=/etc/traefik/traefik.yml
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /run/podman/podman.sock:/run/podman/podman.sock:z
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:z
+      - ./traefik/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:z
+      - ./certs:/etc/traefik/certs:z
+    networks:
+      - traefik-net
+
+  proyecto1:
+    image: docker.io/library/nginx:alpine
+    container_name: nginx-p1
+    volumes:
+      - ./proyecto1/index.html:/usr/share/nginx/html/index.html:z
+      - ./proyecto1/default.conf:/etc/nginx/conf.d/default.conf:z
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.p1-strip.stripprefix.prefixes=/laboratorio/proyecto1"
+      # HTTP
+      - "traefik.http.routers.p1.rule=PathPrefix(`/laboratorio/proyecto1`)"
+      - "traefik.http.routers.p1.entrypoints=web"
+      - "traefik.http.routers.p1.middlewares=p1-strip"
+      - "traefik.http.services.p1.loadbalancer.server.port=9091"
+      # HTTPS
+      - "traefik.http.routers.p1-secure.rule=PathPrefix(`/laboratorio/proyecto1`)"
+      - "traefik.http.routers.p1-secure.entrypoints=websecure"
+      - "traefik.http.routers.p1-secure.tls=true"
+      - "traefik.http.routers.p1-secure.middlewares=p1-strip"
+
+  proyecto2:
+    image: docker.io/library/nginx:alpine
+    container_name: nginx-p2
+    volumes:
+      - ./proyecto2/index.html:/usr/share/nginx/html/index.html:z
+      - ./proyecto2/default.conf:/etc/nginx/conf.d/default.conf:z
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.p2-strip.stripprefix.prefixes=/laboratorio/proyecto2"
+      # HTTP
+      - "traefik.http.routers.p2.rule=PathPrefix(`/laboratorio/proyecto2`)"
+      - "traefik.http.routers.p2.entrypoints=web"
+      - "traefik.http.routers.p2.middlewares=p2-strip"
+      - "traefik.http.services.p2.loadbalancer.server.port=9081"
+      # HTTPS
+      - "traefik.http.routers.p2-secure.rule=PathPrefix(`/laboratorio/proyecto2`)"
+      - "traefik.http.routers.p2-secure.entrypoints=websecure"
+      - "traefik.http.routers.p2-secure.tls=true"
+      - "traefik.http.routers.p2-secure.middlewares=p2-strip"
+
+networks:
+  traefik-net:
+    driver: bridge

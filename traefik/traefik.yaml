@@ -1,0 +1,19 @@
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///run/podman/podman.sock"
+    exposedByDefault: false
+  file:
+    filename: /etc/traefik/dynamic_conf.yml
+    watch: true
+    # Clave para usar Go Templates
+    template: true
