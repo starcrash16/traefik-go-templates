@@ -1,0 +1,37 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/local.crt
+        keyFile: /etc/traefik/certs/local.key
+
+http:
+  routers:
+    router-geoasistente:
+      rule: "PathPrefix(`/laboratorio/geoasistente`)"
+      service: service-geoasistente
+      entryPoints: [web, websecure]
+      tls: true
+      middlewares: [strip-geoasistente]
+    router-google:
+      rule: "PathPrefix(`/laboratorio/google`)"
+      service: service-google
+      entryPoints: [web, websecure]
+      tls: true
+      middlewares: [strip-google]
+  services:
+    service-geoasistente:
+      loadBalancer:
+        servers:
+          - url: "http://10.152.11.81:8010"
+    service-google:
+      loadBalancer:
+        servers:
+          - url: "https://www.google.com"
+  middlewares:
+    strip-geoasistente:
+      stripPrefix:
+        prefixes: ["/laboratorio/geoasistente"]
+    strip-google:
+      stripPrefix:
+        prefixes: ["/laboratorio/google"]
