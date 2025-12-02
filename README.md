@@ -2,7 +2,7 @@
 
 Este proyecto implementa una arquitectura de **Proxy Inverso** utilizando **Traefik v3** orquestado con **Podman**. Su objetivo es centralizar el acceso a múltiples aplicaciones bajo un único dominio y una estructura de rutas estandarizada (`/laboratorio/`), gestionando tanto contenedores locales como servicios externos.
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 1. [Arquitectura y Tecnologías](#-arquitectura-y-tecnologías)
 2. [Lógica de Orquestación](#-lógica-de-orquestación-compose-vs-env)
 3. [Estructura del Proyecto](#-estructura-del-proyecto)
@@ -13,7 +13,7 @@ Este proyecto implementa una arquitectura de **Proxy Inverso** utilizando **Trae
 
 ---
 
-## 🛠 Arquitectura y Tecnologías
+## Arquitectura y Tecnologías
 
 El sistema actúa como una pasarela segura (Gateway) que intercepta el tráfico HTTP/HTTPS y lo distribuye según la ruta solicitada.
 
@@ -25,7 +25,7 @@ El sistema actúa como una pasarela segura (Gateway) que intercepta el tráfico 
 
 ---
 
-## 🧠 Lógica de Orquestación: Compose vs. Env
+## Lógica de Orquestación: Compose vs. Env
 
 Para entender cómo administrar este proyecto, es crucial distinguir entre **Orquestar** y **Enrutar**.
 
@@ -38,14 +38,14 @@ Para entender cómo administrar este proyecto, es crucial distinguir entre **Orq
 
 ---
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```text
 .
 ├── compose.yaml            # Definición de contenedores locales (Traefik, Nginx P1, P2)
 ├── setup.sh                # Script maestro de inicialización y generación de config
 ├── test_lab.sh             # Script de auditoría y pruebas automatizadas
-├── .env                    # "Fuente de la Verdad" para rutas externas
+├── .env                    # Fuente para rutas externas
 ├── traefik/
 │   ├── traefik.yml         # Configuración estática de Traefik
 │   └── dynamic_conf.yml    # (Generado automáticamente) Reglas de ruteo externo
@@ -55,7 +55,7 @@ Para entender cómo administrar este proyecto, es crucial distinguir entre **Orq
 ```
 ---
 
-# 🚀 Instalación y Despliegue
+# Instalación y Despliegue
 
 ## Requisitos
 - Linux (o WSL2) con **Podman** instalado.  
@@ -88,7 +88,7 @@ sudo podman ps
 
 ---
 
-# ⚙️ Guía de Configuración
+# Guía de Configuración
 
 ## Caso A: Agregar un nuevo Proyecto Local
 
@@ -106,7 +106,7 @@ labels:
 3. Reinicie: podman-compose up -d.
 
 ## Caso B: Agregar una Ruta a un Servidor Externo (IP)
-1.Edite el archivo .env:
+1. Edite el archivo .env:
 ```bash
 APP_NUEVO_SISTEMA=[http://192.168.1.50:3000](http://192.168.1.50:3000)
 ```
@@ -151,6 +151,7 @@ chmod +x test_lab.sh
 ### 4. Race Condition en Volúmenes
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
+
 
 
 
