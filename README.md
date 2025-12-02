@@ -65,7 +65,8 @@ Para entender cómo administrar este proyecto, es crucial distinguir entre **Orq
 ### 1. Clonar el repositorio:
 ```bash
 git clone <URL_DEL_REPOSITORIO>
-cd nombre-repo```
+cd nombre-repo
+```
 
 ### 2. Inicializar el entorno:
 Ejecute el script de configuración. Esto generará los certificados SSL y convertirá el archivo .env en una configuración válida para Traefik.
@@ -91,8 +92,11 @@ sudo podman ps
 
 ## Caso A: Agregar un nuevo Proyecto Local
 
-1. Edite compose.yaml.
+1. Edite `compose.yaml`.
 2. Agregue el servicio y defina las etiquetas (labels) para Traefik:
+   - Añada las labels de routing.
+   - Ajuste el puerto del servicio.
+
 
 ```bash
 labels:
@@ -102,7 +106,6 @@ labels:
 3. Reinicie: podman-compose up -d.
 
 ## Caso B: Agregar una Ruta a un Servidor Externo (IP)
-
 1.Edite el archivo .env:
 ```bash
 APP_NUEVO_SISTEMA=[http://192.168.1.50:3000](http://192.168.1.50:3000)
@@ -111,7 +114,6 @@ APP_NUEVO_SISTEMA=[http://192.168.1.50:3000](http://192.168.1.50:3000)
 ```bash
 ./setup.sh
 ```
-
 (No requiere reiniciar contenedores, Traefik detecta el cambio en caliente).
 
 ---
@@ -123,7 +125,7 @@ Se incluye un script automatizado para validar la salud del sistema.
 chmod +x test_lab.sh
 ./test_lab.sh
 ```
-Interpretación de Resultados Manuales (curl)
+**Interpretación de Resultados Manuales (curl)**
 
 | Ruta | Resultado Típico | Interpretación |
 | :--- | :--- | :--- |
@@ -133,8 +135,7 @@ Interpretación de Resultados Manuales (curl)
 
 
 ---
-#Retos Técnicos y Soluciones
-
+# Retos Técnicos y Soluciones
 ### 1. Incompatibilidad de Redes CNI (Version Mismatch)
 * **Problema:** `podman-compose` generaba configuraciones de red versión `1.0.0`, incompatibles con los plugins CNI del sistema (`0.4.0`), impidiendo el arranque de contenedores.
 * **Solución:** Implementación de parches manuales sobre `/etc/cni/net.d/` y recreación controlada de la red `podman` por defecto.
@@ -150,6 +151,7 @@ Interpretación de Resultados Manuales (curl)
 ### 4. Race Condition en Volúmenes
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
+
 
 
 
