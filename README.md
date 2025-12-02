@@ -145,3 +145,4 @@ Interpretación de Resultados Manuales (curl)
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
 
+
