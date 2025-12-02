@@ -2,6 +2,28 @@
 
 Este proyecto implementa una arquitectura de **Proxy Inverso** utilizando **Traefik v3** orquestado con **Podman**. Su objetivo es centralizar el acceso a múltiples aplicaciones bajo un único dominio y una estructura de rutas estandarizada (`/laboratorio/`), gestionando tanto contenedores locales como servicios externos.
 
+---
+
+## ¿Cómo funciona la generación automática de nombres?
+
+El script `setup.sh` utiliza una convención de nombres estricta para transformar las variables del archivo `.env` en rutas URL accesibles. El proceso de transformación (parsing) sigue estas 3 reglas lógicas:
+
+1. **Filtro:** El script solo lee las variables que comienzan con el prefijo `APP_`. Cualquier otra variable (como contraseñas o config de BD) es ignorada por seguridad.
+2. **Limpieza:** Se elimina el prefijo `APP_` del nombre de la variable.
+3. **Normalización:** El texto restante se convierte a minúsculas para cumplir con los estándares de URLs.
+
+---
+
+### Tabla de Transformación (ejemplos)
+
+| Variable en `.env` | Paso 1: Limpieza (sin `APP_`) | Paso 2: Minúsculas | Ruta Resultante |
+|---|---|---:|---|
+| `APP_NOMINA=...` | `NOMINA` | `nomina` | `nomina/laboratorio/nomina` |
+| `APP_RECURSOS_HUMANOS=...` | `RECURSOS_HUMANOS` | `recursos_humanos` | `recursos_humanos/laboratorio/recursos_humanos` |
+| `DB_PASSWORD=...` | (Ignorado — no tiene `APP_`) | (Ignorado) | — |
+
+> Nota: la ruta resultante puede adaptarse a la estructura que prefieras (por ejemplo `/laboratorio/<nombre>`). El ejemplo anterior sigue la convención interna usada por `setup.sh` en este proyecto.
+
 ## Tabla de Contenidos
 1. [Arquitectura y Tecnologías](#-arquitectura-y-tecnologías)
 2. [Lógica de Orquestación](#-lógica-de-orquestación-compose-vs-env)
@@ -151,6 +173,7 @@ chmod +x test_lab.sh
 ### 4. Race Condition en Volúmenes
 * **Problema:** Al iniciar el orquestador antes de la existencia de los archivos de configuración, Podman creaba directorios en lugar de archivos, causando el error `is a directory` en Traefik.
 * **Solución:** Implementación estricta del script de inicialización (`setup.sh`) como prerrequisito de despliegue.
+
 
 
 
